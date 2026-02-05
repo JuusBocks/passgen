@@ -1,3 +1,4 @@
+"""Entry point when running as python -m passgen or via the passgen console script."""
 import sys
 import os
 import traceback
@@ -14,7 +15,8 @@ def main():
         sys.exit(app.exec())
     except Exception as exc:
         try:
-            base_dir = os.path.dirname(os.path.abspath(__file__))
+            # Log in project root / logs (one level up from passgen package)
+            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
             logs_dir = os.path.join(base_dir, "logs")
             os.makedirs(logs_dir, exist_ok=True)
             log_path = os.path.join(logs_dir, "passgen_error.log")
@@ -24,14 +26,15 @@ def main():
                 f.write("\n")
         except Exception:
             pass
-        # Don't use QMessageBox here: Qt can crash if no app is running (e.g. on macOS 26)
-        err_log = os.path.join(os.path.dirname(os.path.abspath(__file__)), "logs", "passgen_error.log")
+        # Don't use QMessageBox here: Qt can crash (e.g. on macOS 26) if no app is running
+        err_log = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            "logs", "passgen_error.log"
+        )
         print(f"passgen error: {exc}", file=sys.stderr)
         print(f"Details written to: {err_log}", file=sys.stderr)
         raise
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
-
-
